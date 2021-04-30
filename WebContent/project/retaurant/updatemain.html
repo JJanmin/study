@@ -1,0 +1,41 @@
+//db추가 버튼
+		$("#btninsert").click(function(e){
+			e.preventDefault();//기본 이벤트 무효화
+			var name=$("#name").val();
+			var addr=$("#addr").val();
+			var star=$("#star").val();
+			var content=$("#content").val();
+			var image=$("#image").val();
+			image=image.substring(0,image.length-1);
+			var writer=$("#writer").val();
+			var pass=$("#pass").val();
+
+			$.ajax({
+				type:"post",
+				dataType:"html",
+				url:"restaurantinsert.jsp",
+				data:{"name":name,"addr":addr,"star":star,
+					"content":content,"image":image,
+					"writer":writer,"pass":pass},
+				success:function(d){
+					//다시 출력
+					list();
+					//입력값 지우기
+					$("#name").val('');
+					$("#addr").val('');
+					$("img.star").removeClass("select");
+					$("img.star").eq(2).addClass("select");
+					$("#star").val($("img.star").eq(2).attr("src"));
+					$("#content").val('');
+					$("#image").val('');
+					$("#imgview").empty(); //이미지 전체 삭제
+					$("#writer").val('');
+					$("#pass").val('');
+					
+					//입력폼 숨기기
+					$("div.addform").hide();
+					//목록 출력
+					$("div.list").show();
+				}
+			});
+		});

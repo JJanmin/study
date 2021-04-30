@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="../css/style1.css">
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+<style type="text/css">
+div.rs{
+	font-family:'Noto Sans KR';
+	font-size: 1.3em;
+}
+#bgimage{
+	position:absolute;
+	padding: 20px 20px;
+	top:5%;
+	left:35%; 
+}
+div.list {
+	position:absolute;
+	left:15%; 
+	top:20%;
+	width: 1200px;
+	padding: 30px 30px;
+}
+
+div.addform {
+	position:absolute;
+	left:15%; 
+	top:20%;
+	width: 1000px;
+	height: 400px;
+	padding: 20px 20px;
+}
+div.updateform {
+	position:absolute;
+	left:15%; 
+	top:20%;
+	width: 1000px;
+	height: 400px;
+	padding: 20px 20px;
+}
+div.list table>thead{
+	background-color:coral;
+	text-align: center;
+	font-weight: bold;
+	font-size: 1.5em;
+	color: white;
+}
+div.list table>td{
+	text-align: center;
+}
+
+button.addbtn{
+	background-color:orange;
+    position: absolute;
+  	right:5%; 
+	top:-3%;
+    width: 150px;
+    text-align: center;
+}
+
+div.list h3{
+	text-align: center;
+	font-family:'Noto Sans KR';
+	font-weight: bold;
+	font-size: 3em;
+	width: 1000px;
+	
+}
+table.content{
+		position:absolute;
+		left:30%; 
+		top:20%;
+		height: 500px;
+		font-size: 13pt;
+		margin-bottom: 10px;
+		font-family:'Noto Sans KR';
+}
+table.content td.name{
+	height: 50px;
+}
+table.content td.writer{
+	height: 50px;
+}
+td.content{
+	position:absolute;
+	left:30%; 
+	top:40%;
+}
+table.content img.showimg{
+		max-width: 300px;
+		border: 3px solid orange;
+		box-shadow: 5px 5px 5px coral;
+		padding : 10px 10px;
+		margin: 5px 5px;
+	}
+td.button{
+box-shadow: 5px 5px 5px coral;
+}
+td.name{
+		cursor:pointer;
+	}
+td.name:hover{
+		color: tomato;
+	}
+table.content span.writer{
+		font-family:'Noto Sans KR';
+		font-size: 13pt;
+		font-weight: bold;
+	}
+
+table.content div.content{
+		font-size: 13pt;
+		margin-bottom: 10px;
+		font-family:'Noto Sans KR';
+	}
+img.star{
+cursor: pointer;
+	width: 100px;
+}
+img.select {
+	border: 2px solid orange;
+}
+div.delete{
+position:absolute;
+top:80%;
+left: 30%;
+}
+
+</style>
+<script type="text/javascript">
+var start=1;//페이징 시작번호
+var total=0;//db 데이터 전체 갯수
+	$(function() {
+		$("div.addform").hide();
+		$("div.updateform").hide();
+		$("div.content").hide();
+	
+		list();
+		
+		//글쓰기
+		$(document).on("click","button.addbtn",function(){
+			$("div.list").hide();
+			$("div.content").hide();
+			$("div.addform").show();
+			
+			//아바타 2번 인덱스에 select 클래스 추가
+			$("img.star").eq(2).addClass("select");
+			//아바타 2번 인텍스의 src 값 얻어서 input 태그에 넣어주기
+			$("#star").val($("img.star").eq(2).attr("src"));
+			//아바타 선택시 값변경하기
+			$("img.star").click(function() {
+				$(this).siblings().removeClass("select");
+				$(this).addClass("select");
+				$("#star").val($(this).attr("src"));
+			});	
+			//이미지 선택시
+			$("#selimage").change(function(){
+				var im=$(this).val();
+				//이미지명을 현재 값에 추가로 더하기
+				var data=$("#image").val();
+				$("#image").val(data+im+",");
+				//아래 이미지뷰에 추가로 이미지 보이게하기
+				$("#imgview").html(function(i,html){
+					var s="<img src='"+im+"' width='50'>";
+					return html+s;
+				});	
+				
+			});
+		});
+		//db추가 버튼
+		$("#btninsert").click(function(e){
+			e.preventDefault();//기본 이벤트 무효화
+			var name=$("#name").val();
+			var addr=$("#addr").val();
+			var star=$("#star").val();
+			var content=$("#content").val();
+			var image=$("#image").val();
+			image=image.substring(0,image.length-1);
+			var writer=$("#writer").val();
+			var pass=$("#pass").val();
+
+			$.ajax({
+				type:"post",
+				dataType:"html",
+				url:"restaurantinsert.jsp",
+				data:{"name":name,"addr":addr,"star":star,
+					"content":content,"image":image,
+					"writer":writer,"pass":pass},
+				success:function(d){
+					//다시 출력
+					list();
+					//입력값 지우기
+					$("#name").val('');
+					$("#addr").val('');
+					$("img.star").removeClass("select");
+					$("img.star").eq(2).addClass("select");
+					$("#star").val($("img.star").eq(2).attr("src"));
+					$("#content").val('');
+					$("#image").val('');
+					$("#imgview").empty(); //이미지 전체 삭제
+					$("#writer").val('');
+					$("#pass").val('');
+					
+					//입력폼 숨기기
+					$("div.addform").hide();
+					//목록 출력
+					$("div.list").show();
+				}
+			});
+		});
+		//제목 클릭시 이벤트
+		$(document).on("click","td.name",function(){
+		var num=$(this).attr("num");
+		//alert(num);
+		$.ajax({
+			type:"get",
+			dataType:"json",
+			url:"restaurantcontent.jsp",
+			data:{"num":num},
+			success:function(data){
+				     $("#mynum").val(data.num);
+					//alert("성공");
+					$("table.content span.name").html(data.name==null?"제목없음":data.name);
+					$("table.content span.addr").html(data.addr);
+					var st="<img src='"+data.star+"' class='showst'>";
+					$("table.content span.star").html(st);
+					$("table.content div.content").html(data.content);
+					if(data.image!=null){
+						var imgarr=data.image.split(",");
+						var im="";
+						$.each(imgarr, function(i,elt){
+							im+="<img src='"+elt+"' class='showimg'>";
+							});
+							$("table.content div.image").html(im);
+						}
+
+					$("table.content span.writer").html(data.writer);
+					//목록 안 보이게
+					$("div.list").hide();
+					$("div.content").show();
+				},
+				error:function(request,status,error){
+			        alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+			       }
+
+			});
+		});
+		
+		//수정버튼
+		$(document).on("click", "button.updatebtn", function() {
+			var tag="<div class='delete'><b>비밀번호:</b>";
+			tag+="<input type='password' class='date' style='width:100px; margin-left:10px;'>";
+			tag+="<button type='button' class='btn btn-warning' id='up'>수정</button>";
+			tag+="</div>";
+			$("table.content").after(tag);
+		});
+		
+		
+		$(document).on("click", "#up", function() {
+			//수정할 num 속성에서 가져오기
+			var num = $("#mynum").val();
+			$("#unum").val(num);
+			var pass=$("input.date").val();
+			console.log("date="+pass);
+			$.ajax({
+				type : "get",
+				dataType : "xml",
+				url : "passcheck.jsp",
+				data:{"num":num,"pass":pass},
+				success:function(data){
+					if($(data).text()=='success'){
+						//alert("짜잔");
+						
+						
+						$("div.list").hide();
+						$("div.content").hide();
+						$("div.addform").hide();
+						$("div.updateform").show();
+						//비번이 맞을경우 목록 보이게 하기
+						/*$("div.content").hide();
+						$("div.delete").empty().hide();
+						list();//db에서 목록 다시 가져오기
+						$("div.list").show();*/
+						
+						$.ajax({
+							type : "get",
+							url : "restaurantgetdata.jsp",
+							dataType : "xml",
+							data : {"num" : num},
+							success : function(data) {
+							var name = $(data).find("name").text();
+							var addr = $(data).find("addr").text();
+							var star = $(data).find("star").text();
+							var content = $(data).find("content").text();
+							var image = $(data).find("image").text();
+							
+							var writer = $(data).find("writer").text();
+							var pass = $(data).find("pass").text();
+							//수정 폼태그 안에 넣어준다
+							$("#uname").val(name);
+							$("#uaddr").val(addr);
+							$("#ustar").val(star);
+							$("#ucontent").val(content);
+							$("#uimage").val(image);
+							$("#uwriter").val(writer);
+							$("#upass").val(pass);
+							
+							
+							//아바타 2번 인덱스에 select 클래스 추가
+							$("img.ustar").eq(2).addClass("select");
+							//아바타 2번 인텍스의 src 값 얻어서 input 태그에 넣어주기
+							$("#ustar").val($("img.ustar").eq(2).attr("src"));
+							//아바타 선택시 값변경하기
+							$("img.ustar").click(function() {
+								$(this).siblings().removeClass("select");
+								$(this).addClass("select");
+								$("#ustar").val($(this).attr("src"));
+							
+							
+							//이미지 선택시
+							$("#selimage").change(function(){
+								var im=$(this).val();
+								//이미지명을 현재 값에 추가로 더하기
+								var data=$("#image").val();
+								$("#image").val(data+im+",");
+								//아래 이미지뷰에 추가로 이미지 보이게하기
+								$("#uimgview").html(function(i,html){
+									var s="<img src='"+im+"' width='50'>";
+									return html+s;
+								});
+
+							});
+							list();
+							});	
+							
+							
+							}
+							
+						});
+					}else{
+						alert("비밀번호가 맞지 않습니다");
+						$("input.date").val('');//비번지우기
+					}
+					
+				}
+				
+			});
+			
+		});
+		
+		
+		 //수정
+		$(document).on("click","#btnupdate",function() {
+			var unum = $("#mynum").val();
+			$("#unum").val(unum);
+			//e.defaultPrevented();
+			var uname=$("#uname").val();
+			var uaddr=$("#uaddr").val();
+			var ustar=$("#ustar").val();
+			var ucontent=$("#ucontent").val();
+			var uimage=$("#uimage").val();
+			uimage=image.substring(0,image.length-1);
+			var uwriter=$("#uwriter").val();
+			
+			
+			$.ajax({
+				type : "post",
+				dataType : "html",
+				url : "restaurantupdate.jsp",
+				data:{"unum":unum,"uname":uname,"uaddr":uaddr,"ustar":ustar,
+					"ucontent":ucontent,"uimage":uimage,
+					"uwriter":uwriter},
+				success : function(data) {
+					//수정 성공시 목록 다시 출력
+					list();
+
+					//입력폼 숨기기
+					$("div.updateform").hide();
+					//목록 출력
+					$("div.list").show();
+				}
+			}); 
+		});  
+		
+	});
+
+	function list() 
+	{
+		$.ajax({
+			type : "get",
+			dataType : "xml",
+			url : "restaurantlist.jsp",
+			success : function(data) {
+			//alert(data.length);
+				total=$(data).find("total").text();
+				console.log("total="+total);
+				var s = "";
+				
+				
+				s+="<button type='button' class='btn btn-warning addbtn'>";
+				s+="<span class='glyphicon glyphicon-pencil'></span>글쓰기</button>";
+				//db에서 데이터 가져와서 출력하기
+				var n=$(data).find("restaurant").length;
+				//alert(n);
+				if(n==0){
+					s += "<h3 class='alert alert-warning'>저장된 맛집이 없습니다</h3>"
+				}else{
+					s+="<table class='restaurant table table-hover'>";
+					s+="<thead><tr>";
+					s+="<td style='width:50px;'>번호</td>";
+					s+="<td style='width:100px;'>가게명</td>";
+					s+="<td style='width:100px;'>위치</td>";
+					s+="<td style='width:100px;'>별점</td>";		
+					s+="</tr></thead>"
+					s+="<tbody>";
+					var no=total-start+1;//각 페이지에서 출력할 시작 번호
+					$(data).find("restaurant").each(function(i,element){
+						var n=$(this);
+						var num=n.attr("num");
+						var name=n.find("name").text();
+						var addr=n.find("addr").text();
+						var star=n.find("star").text();
+						
+						//출력
+						s+="<tr align='center'>";
+						//페이지에 해당하는 번호
+						s+="<td>"+(no--)+"</td>";
+						s+="<td align='center' num="+num+" class='name'>"+name+"</td>";
+						s+="<td>"+addr+"</td>";
+						s+="<td><img src='"+star+"' align='center' style='width:100px; height:60px;'></td>";
+						s+="</tr>";
+					});
+				/*	//이전, 다음
+					s+="<tr><td colspan='5'>";
+					s+="<span class='left glyphicon glyphicon-menu-left'></span>";
+					s+="<span class='right glyphicon glyphicon-menu-right'></span>";
+					
+					s+="</td></tr>";*/
+				}
+				
+				s+="</tbody>";
+				s+="</table>";
+				$("div.list").html(s);
+				
+				
+			}
+
+		});
+	}
+</script>
+</head>
+<body>
+	<img src="../image/레스토랑.png" id="bgimage">
+	<input type="hidden" id="mynum">
+	<div class="rs addform">
+		<form id="addfrm">
+			<table class="add table table-hover" style="width: 800px;">
+				<caption>맛집 작성</caption>
+				<tr>
+					<th style="width: 200px; background-color: tomato; text-align: left;" >가게명</th>
+					<td><input type="text" name="name" id="name"
+						class="form-inline" required="required" style="width: 200px; text-align: left;"
+						placeholder="가게명"></td>
+				</tr>
+				<tr>
+					<th style="width: 200px;">위치</th>
+					<td><input type="text" name="addr" id="addr"
+						class="form-inline" required="required" style="width: 200px;"
+						placeholder="위치"></td>
+				</tr>
+				<tr>
+					<th style="width: 200px; background-color: tomato;">별점</th>
+					<td><input type="hidden" name="star" id="star"> <script
+							type="text/javascript">
+						var tag = "";
+						for (var i = 1; i <= 5; i++) {
+							tag += "<img src='../image/"+i+"점.png' width='50' class='star'>";
+							if (i == 6)
+								tag += "<br>";
+						}
+						document.write(tag);
+					</script></td>
+				</tr>
+				<tr>
+					<th style="width: 200px;">내용</th>
+					<td><textarea style="width: 400px; height: 100px;"
+							name="content" id="content" class="form-control"
+							placeholder="내용을 입력하세요"></textarea></td>
+				</tr>
+				<tr>
+					<th style="width: 200px; background-color: tomato;">음식 종류</th>
+					<td>
+					<input type="hidden" name="image" id="image">
+					<select id="selimage" style="width: 150px;" class="form-control" >
+							<option disabled hidden selected>이미지 선택</option>
+							<option value="../image/백반.jpg">백반</option>
+							<option value="../image/라멘.jpg">일식</option>
+							<option value="../image/이자카야.jpg">이자카야</option>
+							<option value="../image/이탈리안.jpg">이탈리안</option>
+							<option value="../image/비건.jpg">비건</option>
+							<option value="../image/카페.jpg">카페</option>
+					</select><br>
+						<div id="imgview"></div></td>
+				</tr>
+				<tr>
+					<th style="width: 200px;">작성자</th>
+					<td><input type="text" class="form-inline" required="required"
+						name="writer" id="writer" style="width: 150px;"
+						placeholder="작성자"></td>
+				</tr>
+				<tr>
+					<th style="width: 200px; background-color: tomato;">비밀번호</th>
+					<td><input type="password" name="pass" id="pass"
+						class="form-inline" required="required" style="width: 150px;"></td>
+				</tr>
+				<tr>
+					<td colspan="2" align="center">
+						<button type="submit" class="btn btn-danger" id="btninsert"
+							style="width: 140px;">맛집 추가</button>
+						<button type="button" class="btn btn-warning btn-sm"
+							style="width: 140px;" onclick="location.href='main.html'">목록</button>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<div class="rs updateform">
+		<form id="updatefrm">
+			<input type="hidden" id="unum" value="" name="unum">
+			<table class="update table table-hover" style="width: 800px;">
+				<caption>맛집 수정</caption>
+				<tr>
+					<th style="width: 200px; background-color: tomato; text-align: left;" >가게명</th>
+					<td><input type="text" value="" name="uname" id="uname"
+						class="form-inline" required="required" style="width: 200px; text-align: left;"
+						placeholder="가게명"></td>
+				</tr>
+				<tr>
+					<th style="width: 200px;">위치</th>
+					<td><input type="text" name="uaddr" id="uaddr"
+						class="form-inline" required="required" style="width: 200px;"
+						placeholder="위치"></td>
+				</tr>
+				<tr>
+					<th style="width: 200px; background-color: tomato;">별점</th>
+					<td><input type="hidden" name="ustar" id="ustar"> <script
+							type="text/javascript">
+						var tag = "";
+						for (var i = 1; i <= 5; i++) {
+							tag += "<img src='../image/"+i+"점.png' width='50' class='ustar'>";
+							if (i == 6)
+								tag += "<br>";
+						}
+						document.write(tag);
+					</script></td>
+				</tr>
+				<tr>
+					<th style="width: 200px;">내용</th>
+					<td><textarea style="width: 400px; height: 100px;"
+							name="ucontent" id="ucontent" class="form-control"
+							placeholder="내용을 입력하세요"></textarea></td>
+				</tr>
+				<tr>
+					<th style="width: 200px; background-color: tomato;">음식 종류</th>
+					<td>
+					<input type="text" name="uimage" id="uimage">
+					<select id="uselimage" style="width: 150px;" class="form-control" >
+							<option disabled hidden selected>음식 선택</option>
+							<option value="../image/백반.jpg">백반</option>
+							<option value="../image/라멘.jpg">일식</option>
+							<option value="../image/이자카야.jpg">이자카야</option>
+							<option value="../image/이탈리안.jpg">이탈리안</option>
+							<option value="../image/비건.jpg">비건</option>
+							<option value="../image/카페.jpg">카페</option>
+					</select><br>
+						<div id="uimgview"></div></td>
+				</tr>
+				<tr>
+					<th style="width: 200px;">작성자</th>
+					<td><input type="text" class="form-inline" required="required"
+						name="uwriter" id="uwriter" style="width: 150px;"
+						placeholder="작성자"></td>
+				</tr>
+				<tr>
+					<th style="width: 200px; background-color: tomato;">비밀번호</th>
+					<td><input type="password" name="upass" id="upass"
+						class="form-inline" required="required" style="width: 150px;"></td>
+				</tr>
+				<tr>
+					<td colspan="2" align="center">
+						<button type="submit" class="btn btn-danger" id="btnupdate"
+							style="width: 140px;">맛집 수정</button>
+						<button type="button" class="btn btn-warning btn-sm"
+							style="width: 140px;" onclick="location.href='main.html'">목록</button>
+					</td>
+				</tr>
+			</table>
+		</form></div>
+	<div class="rs content">
+	<table class="content table table-bordered" style="width: 600px; border: 3px solid coral;">
+		<caption><b style="color: tomato; font-family:'Noto Sans KR';">맛집 확인</b></caption>
+		<tr>
+			<td>
+				가게명: <span class="name"></span>
+				
+			</td>
+			<td>
+				위치: <span class="addr"></span>
+				
+			</td>
+		</tr>
+		<tr>
+			<td>
+				작성자: <span class="writer">작성자</span>
+			</td>
+			<td>
+				<span class="star">별점</span>
+				
+			</td>
+		</tr>
+		<tr style="height: 100px;" valign="top">
+			<td colspan="2">
+				<div class="content">내용</div>
+				<div class="image">이미지</div>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<button type="button" class="listbtn btn-warning btn-sm" style="width: 100px;" 
+				onclick="location.href='main.html'">목록</button>
+				<button type="button" class="addbtn btn-warning btn-sm" style="width: 100px;" >글쓰기</button>
+				<button type="button" class="updatebtn btn-warning btn-sm" style="width: 100px;" >수정</button>
+				<button type="button" class="deletebtn btn-warning btn-sm" style="width: 100px;" >삭제</button>
+			</td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript">
+	//삭제버튼
+		$("button.deletebtn").click(function(){
+			var tag="<div class='delete'><b>비밀번호:</b>";
+			tag+="<input type='password' class='pass' style='width:100px; margin-left:10px;'>";
+			tag+="<button type='button' class='btn btn-warning' id='del'>삭제</button>";
+			tag+="</div>";
+			
+			if($("div.delete").text().length==0){
+				$("div.delete").empty();
+				$("table.content").after(tag);
+			}else{
+				$("div.delete").empty();
+			}
+			
+			});
+		//삭제 이벤트
+		$(document).on("click", "#del", function() {
+			var num = $("#mynum").val();
+			console.log("num="+num);
+			var pass=$("input.pass").val();
+			console.log("pass="+pass);
+			//alert(num);
+			$.ajax({
+				type : "get",
+				dataType : "xml",
+				url : "restaurantdelete.jsp",
+				data:{"num":num,"pass":pass},
+				success:function(data){
+					if($(data).text()=='success'){
+						//비번이 맞을경우 목록 보이게 하기
+						$("div.content").hide();
+						$("div.delete").empty().hide();
+						list();//db에서 목록 다시 가져오기
+						$("div.list").show();
+					}else{
+						alert("비밀번호가 맞지 않습니다");
+						$("input.pass").val('');//비번지우기
+				}
+			}
+		});
+		
+	});
+</script>
+<div class="rs list">list</div>
+</body>
+</html>

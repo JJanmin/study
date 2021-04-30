@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Gamja+Flower&family=Noto+Sans+KR:wght@500&family=Poor+Story&family=Sunflower:wght@300&display=swap');
+a{text-decoration: none;}
+ul li{list-style: none;}
+li.main{float:left;}
+li.main>a{
+	display: block;
+	width: 180px;
+	color: black;
+	font-size: 16pt;
+	font-weight: bold;
+	font-family: 'Noto Sans KR';
+}
+li.main>a:hover{
+	cursor:pointer;
+	color: #f08080;
+}
+ul.submenu{
+	margin-left: 0px;
+	font-size: 16px;
+	font-family: 'Poor Story';
+	padding-left: 0;
+	margin-top: 15px;
+}
+ul.submenu>li{
+	display: block;
+	width: 180px;
+	height: 20px;
+	color: #333;	
+}
+ul.submenu>li:hover{
+	color: #f08080;
+	cursor: pointer;
+}
