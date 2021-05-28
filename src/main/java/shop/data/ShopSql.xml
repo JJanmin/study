@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="shop">
+	<!-- 전체 갯수 구하기 -->
+	<select id="totalCountOfShop" resultType="int">
+		select count(*) from shop
+	</select>
+	<!-- insert -->
+	<insert id="insertOfShop" parameterType="sdto">
+		insert into shop (sangpum,color,price,photo,ipgoday,writeday) 
+		values (#{sangpum},#{color},#{price},#{photo},#{ipgoday},now())
+	</insert>
+	
+	<select id="listAllOfShop" resultType="sdto">
+		select * from shop order by sangpum
+	</select>
+	
+	<select id="selectOneOfShop" parameterType="String" resultType="sdto">
+		select * from shop where num=#{num}
+	</select>
+	
+	<update id="updateOfShop" parameterType="sdto">
+		update shop set sangpum=#{sangpum},color=#{color},price=#{price},ipgoday=#{ipgoday}
+		
+		<if test="photo!=null">
+			,photo=#{photo}
+		</if>
+		where num=#{num}
+	</update>
+	
+	<delete id="deleteOfShop" parameterType="String">
+		delete from shop where num=#{num}
+	</delete>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
