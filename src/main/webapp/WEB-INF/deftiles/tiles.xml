@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE tiles-definitions PUBLIC
+   	"-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+   	"http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<tiles-definitions>
+         	<definition name="layout1" template="/WEB-INF/layout/layout.jsp">
+                       	<put-attribute name="title" value="/WEB-INF/layout/title.jsp"/>
+                       	<put-attribute name="menu" value="/WEB-INF/layout/menu.jsp"/>
+                       	<put-attribute name="info" value="/WEB-INF/layout/info.jsp"/>
+                       	<put-attribute name="main" value="/WEB-INF/layout/main.jsp"/>                	
+         	</definition>
+         	<!-- 첫번째 *가  {1} 두번째 *가 {2}-->
+         	<definition name="/*/*" extends="layout1">
+                       	<put-attribute name="main" value="/WEB-INF/{1}/{2}.jsp"/>
+         	</definition>
+</tiles-definitions>
