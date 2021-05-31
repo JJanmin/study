@@ -9,6 +9,8 @@
 <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 </head>
 <body>
-main
+<div style="margin: 30px; 30px;">
+	<img src="image/01.png">
+</div>
 </body>
 </html>
