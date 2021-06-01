@@ -9,8 +9,11 @@
 <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 </head>
 <body>
-<div style="margin: 30px; 30px;">
+<div style="margin: 30px 30px;">
 	<img src="image/01.png">
+	<img src="image/02.png">
+<br>
+<h3>main</h3>
 </div>
 </body>
 </html>

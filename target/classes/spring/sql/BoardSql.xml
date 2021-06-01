@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="board"><!-- namespace 같으면 오류 -->
+	<select id="totalCountofBoard" resultType="int">
+		select count(*) from board
+	</select>
+	
+	<select id="maxNumOfBoard" resultType="int">
+		select ifnull(max(num),0) from board
+	</select>
+	<update id="updateRestep" parameterType="HashMap">
+		update board set restep=restep+1 where reg=#{reg}
+		and restep>#{restep} <!--  같은 그룹 중에 restep 보다 큰 것은 restep을 1 증가 -->
+	</update>
+	<insert id="insertOfBoard" parameterType="bdto">
+		insert into board (writer,id,subject,uploadname,content,
+		reg,restep,relevel,readcount,writeday) values (#{writer},
+		#{id},#{subject},#{uploadname},#{content},#{reg},#{restep},#{relevel},0,now())
+	</insert>
+	<select id="selectPagingOfBoard" parameterType="HashMap" resultType="bdto">
+		select * from board order by reg desc, restep asc limit #{start},#{perpage}
+	</select>
+	<update id="updateReadCountOfBoard" parameterType="int">
+		update board set readcount=readcount+1 where num=#{num}
+	</update>
+	<select id="selectOneOfBoard" parameterType="int" resultType="bdto">
+		select * from board where num=#{num}
+	</select>
+	<select id="searchNameOfMember" parameterType="String" resultType="String">
+		select name from member where id=#{id}
+	</select>
+	<update id="updateOfBoard" parameterType="bdto">
+		update board set subject=#{subject},content=#{content}
+		<if test="upload!=null">
+			,uploadname=#{uploadname}
+		</if>
+		 where num=#{num}
+	</update>
+	<delete id="deleteOfBoard" parameterType="int">
+		delete from board where num=#{num}
+	</delete>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
