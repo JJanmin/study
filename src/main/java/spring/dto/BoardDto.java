@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class BoardDto {
 	private int num;
 	private String writer;
@@ -16,6 +18,7 @@ public class BoardDto {
 	private int restep;
 	private int relevel;
 	private int readcount;
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Timestamp writeday;
 	private ArrayList<MultipartFile> photo;
 	

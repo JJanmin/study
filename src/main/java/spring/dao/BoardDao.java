@@ -87,6 +87,14 @@ public class BoardDao extends SqlSessionDaoSupport{
 	{
 		getSqlSession().delete("deleteOfBoard",num);
 	}
+	public List<BoardDto> getAllDatas()
+	{
+		return getSqlSession().selectList("selectAllOfBoard");
+	}
 	
+	public List<BoardDto> getPhotoDatas()
+	{
+		return getSqlSession().selectList("selectPhotoOfBoard");
+	}
 	
 }

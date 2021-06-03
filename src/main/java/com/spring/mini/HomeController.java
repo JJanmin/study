@@ -65,6 +65,11 @@ public class HomeController {
 		return "redirect:home";
 	}
 	
-	
+	@GetMapping("/mail/send")
+	public String mailform()
+	{
+		return "/email/form";
+	}
+
 }
 

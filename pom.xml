@@ -98,7 +98,7 @@
 			<version>2.9.4</version>
 		</dependency>
 
-
+	
 		<!-- https://mvnrepository.com/artifact/org.apache.tiles/tiles-jsp -->
 		<dependency>
 			<groupId>org.apache.tiles</groupId>
@@ -116,6 +116,18 @@
 			<groupId>org.apache.tiles</groupId>
 			<artifactId>tiles-api</artifactId>
 			<version>${tiles-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4.6</version>
 		</dependency>
 
 		<!-- AspectJ -->
